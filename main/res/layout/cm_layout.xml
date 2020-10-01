@@ -4,7 +4,9 @@
     android:layout_height="70dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="10dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    android:id="@+id/customerCV"
+    android:layout_marginBottom="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -39,6 +41,17 @@
             android:text="ID"
             android:textSize="20sp"
             android:textColor="#fff"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:layout_marginEnd="5dp"
+            android:id="@+id/customerIsActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Is Active"
+            android:textSize="20sp"
+            android:textColor="#fff"
+            android:layout_below="@+id/customerID"
             android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
