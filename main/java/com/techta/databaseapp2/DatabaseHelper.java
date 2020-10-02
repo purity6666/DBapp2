@@ -47,6 +47,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return insert != -1;
     }
 
+    public boolean deleteItem(CustomerModel customerModel) {
+
+        SQLiteDatabase database = getWritableDatabase();
+        String queryString = "DELETE FROM " + CUSTOMER_TABLE + " WHERE " + COLUMN_ID + " = " + customerModel.getId();
+
+        Cursor cursor = database.rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public ArrayList<CustomerModel> getEveryone() {
 
         ArrayList<CustomerModel> returnList = new ArrayList<>();

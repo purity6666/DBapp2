@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -15,11 +17,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ArrayList<CustomerModel> customers = new ArrayList<>();
+    private ArrayList<CustomerModel> customers;
     private RecyclerView recyclerView;
-    private Button addBtn, viewAllBtn;
+    private Button addBtn, getCustomerCountBtn;
     private EditText customerNameET, customerAgeET;
     private SwitchCompat isActiveSwitch;
+    private Animation btnClick;
+    private CustomerRecyclerViewAdapter adapter;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Buttons
         addBtn = findViewById(R.id.addBtn);
         addBtn.setOnClickListener(this);
-        viewAllBtn = findViewById(R.id.viewAllBtn);
-        viewAllBtn.setOnClickListener(this);
+        getCustomerCountBtn = findViewById(R.id.getCustomerCountButton);
+        getCustomerCountBtn.setOnClickListener(this);
 
         //EditTexts
         customerNameET = findViewById(R.id.nameEdit);
@@ -42,15 +47,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Switch
         isActiveSwitch = findViewById(R.id.switchCustomer);
 
+        //Animation
+        btnClick = AnimationUtils.loadAnimation(this, R.anim.button_click);
+
+        databaseHelper = new DatabaseHelper(this);
+
+        customers = databaseHelper.getEveryone();
+
+        showCustomers(customers);
 
     }
+
+
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.addBtn:
+                addBtn.startAnimation(btnClick);
+
                 CustomerModel customerModel;
 
+                //check if input is empty
                 try {
                     customerModel = new CustomerModel(-1, customerNameET.getText().toString(), Integer.parseInt(customerAgeET.getText().toString()), isActiveSwitch.isChecked());
                     Toast.makeText(this, customerModel.getName() + " successfully added as customer", Toast.LENGTH_SHORT).show();
@@ -59,28 +77,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     customerModel = new CustomerModel(-1, "error", 0, false);
                 }
 
-                DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-                databaseHelper.addItem(customerModel);
+                //if it doesn't result in an error it gets added into the database
+                if (!customerModel.getName().equals("error")) {
+                    DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+                    databaseHelper.addItem(customerModel);
+                }
+
+                customerAgeET.getText().clear();
+                customerNameET.getText().clear();
+
+                showCustomers(customers);
+
                 break;
-            case R.id.viewAllBtn:
+            case R.id.getCustomerCountButton:
+                getCustomerCountBtn.startAnimation(btnClick);
 
-                DatabaseHelper databaseHelper1 = new DatabaseHelper(getApplicationContext());
-                ArrayList<CustomerModel> customerModels = databaseHelper1.getEveryone();
 
-                if (customerModels != null) {
-                    Toast.makeText(this, "Customer Count: " + customerModels.size(), Toast.LENGTH_SHORT).show();
-
-                    CustomerRecyclerViewAdapter adapter = new CustomerRecyclerViewAdapter(this);
-                    adapter.setCustomers(customerModels);
-
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+                //check if the list is null and then returns a Toast
+                if (customers != null) {
+                    Toast.makeText(this, "Customer Count: " + customers.size(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "There are no customers", Toast.LENGTH_SHORT).show();
                 }
-
-
-
         }
+    }
+
+    private void showCustomers(ArrayList<CustomerModel> customerModels) {
+        CustomerRecyclerViewAdapter adapter = new CustomerRecyclerViewAdapter(this);
+        adapter.setCustomers(customerModels);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,6 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/app_bg"
         android:padding="10dp">
 
 
@@ -17,55 +17,74 @@
             android:id="@+id/nameEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name" />
+            android:layout_marginTop="10dp"
+            android:background="@drawable/custom_et"
+            android:drawableStart="@drawable/ic_person"
+            android:drawablePadding="12dp"
+            android:hint="Name"
+            android:padding="10dp"
+            android:textColor="#FFF"
+            android:textColorHint="#616161" />
 
         <EditText
-
             android:id="@+id/ageEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/nameEdit"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_et"
+            android:drawableStart="@drawable/ic_age"
+            android:drawablePadding="12dp"
             android:hint="Age"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:padding="10dp"
+            android:textColor="#FFF"
+            android:textColorHint="#616161" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchCustomer"
-            android:text="Active Customer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ageEdit"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
-            android:layout_marginStart="10dp"/>
+            android:text="Active Customer"
+            android:textColor="#fff" />
 
         <Button
-            android:text="Add"
             android:id="@+id/addBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="30dp"
             android:layout_below="@+id/switchCustomer"
-            android:layout_marginTop="20dp"/>
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/button_design"
+            android:text="     Add     "
+            android:textAllCaps="false"
+            android:textColor="#fff" />
 
         <Button
-            android:text="View Customers"
-            android:id="@+id/viewAllBtn"
-            android:layout_marginTop="20dp"
+            android:id="@+id/getCustomerCountButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/switchCustomer"
-            android:layout_marginStart="30dp" />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/button_design"
+            android:text="     Number of Customers     "
+            android:textAllCaps="false"
+            android:textColor="#fff" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/itemRV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/addBtn"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:layoutAnimation="@anim/layout_animation" />
 
     </RelativeLayout>
-
 
 
 </ScrollView>

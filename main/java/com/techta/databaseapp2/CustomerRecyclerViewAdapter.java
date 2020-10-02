@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -35,8 +36,8 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         holder.customerName.setText(customers.get(position).getName());
-        holder.customerAge.setText(Integer.toString(customers.get(position).getAge()));
-        holder.customerID.setText(Integer.toString(customers.get(position).getId()));
+        holder.customerAge.setText("Age: " + Integer.toString(customers.get(position).getAge()));
+        holder.customerID.setText("ID: " + Integer.toString(customers.get(position).getId()));
         if (customers.get(position).isActive()) {
             holder.isActive.setText("Active");
         } else {
@@ -45,7 +46,10 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, customers.get(position).getName() + " clicked", Toast.LENGTH_SHORT).show();
+                DatabaseHelper databaseHelper = new DatabaseHelper(context);
+                CustomerModel customerModel = customers.get(position);
+                databaseHelper.deleteItem(customerModel);
+                Toast.makeText(context, customers.get(position).getName() + " will be deleted on app restart", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -75,4 +79,5 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
         }
     }
+
 }
