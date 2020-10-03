@@ -1,7 +1,9 @@
 package com.techta.databaseapp2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +57,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         customers = databaseHelper.getEveryone();
 
-        showCustomers(customers);
+        adapter = new CustomerRecyclerViewAdapter(this);
+        adapter.setCustomers(customers);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                removeItem();
+            }
+        }).attachToRecyclerView(recyclerView);
 
     }
 
+    private void removeItem() {
+        DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
+        CustomerModel customerModel = customers.get(position);
+        databaseHelper.deleteItem(customerModel);
+    }
 
 
     @Override
@@ -86,8 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 customerAgeET.getText().clear();
                 customerNameET.getText().clear();
 
-                showCustomers(customers);
+                customers = databaseHelper.getEveryone();
 
+                adapter = new CustomerRecyclerViewAdapter(this);
+                adapter.setCustomers(customers);
+
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
                 break;
             case R.id.getCustomerCountButton:
                 getCustomerCountBtn.startAnimation(btnClick);
@@ -102,11 +131,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void showCustomers(ArrayList<CustomerModel> customerModels) {
-        CustomerRecyclerViewAdapter adapter = new CustomerRecyclerViewAdapter(this);
-        adapter.setCustomers(customerModels);
 
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-    }
 }
