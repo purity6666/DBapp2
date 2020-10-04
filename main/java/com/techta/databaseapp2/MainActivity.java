@@ -7,12 +7,14 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,8 +29,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
+    private TextView customerCount;
 
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Animation
         btnClick = AnimationUtils.loadAnimation(this, R.anim.button_click);
 
+        //TextView
+        customerCount = findViewById(R.id.customerCount);
+
         databaseHelper = new DatabaseHelper(this);
 
         customers = databaseHelper.getEveryone();
@@ -63,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
+
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -71,17 +79,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                removeItem();
+                CustomerModel customerModel = customers.get(viewHolder.getAdapterPosition());
+
+                Toast.makeText(MainActivity.this, customerModel.getName()+ " removed", Toast.LENGTH_SHORT).show();
+
+                customers.remove(viewHolder.getAdapterPosition());
+                databaseHelper.deleteItem(customerModel);
+
+                adapter = new CustomerRecyclerViewAdapter(getApplicationContext());
+                adapter.setCustomers(customers);
+
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+
+                customerCountTV();
+
+                adapter.notifyDataSetChanged();
             }
+
         }).attachToRecyclerView(recyclerView);
 
+        customerCountTV();
+
     }
 
-    private void removeItem() {
-        DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
-        CustomerModel customerModel = customers.get(position);
-        databaseHelper.deleteItem(customerModel);
-    }
 
 
     @Override
@@ -117,10 +138,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+                customerCountTV();
+
                 break;
             case R.id.getCustomerCountButton:
                 getCustomerCountBtn.startAnimation(btnClick);
-
 
                 //check if the list is null and then returns a Toast
                 if (customers != null) {
@@ -131,5 +154,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    private void customerCountTV() {
+        if (customers != null) {
+            customerCount.setText(customers.size() + " Customers");
+        } else {
+            customerCount.setText("No customers...");
+        }
+    }
 
 }

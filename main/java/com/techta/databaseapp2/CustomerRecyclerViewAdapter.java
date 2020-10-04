@@ -1,11 +1,14 @@
 package com.techta.databaseapp2;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -32,7 +35,7 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.customerName.setText(customers.get(position).getName());
         holder.customerAge.setText("Age: " + customers.get(position).getAge());
         holder.customerID.setText("ID: " + customers.get(position).getId());
@@ -41,6 +44,28 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
         } else {
             holder.isActive.setText("Not Active");
         }
+        holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String customerIsActive;
+
+                if (customers.get(position).isActive()) {
+                    customerIsActive = "Active";
+                } else {
+                    customerIsActive = "Not Active";
+                }
+
+                ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                String text = customers.get(position).getName() +
+                        "\n" + "Age: " + customers.get(position).getAge() +
+                        "\n" + "ID: " + customers.get(position).getId() +
+                        "\n" + customerIsActive;
+                ClipData clip = ClipData.newPlainText("customerInfo", text);
+                clipboard.setPrimaryClip(clip);
+
+                Toast.makeText(context, "Customer Info copied to Clipboard", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void setCustomers(ArrayList<CustomerModel> customers) {
