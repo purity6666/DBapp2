@@ -27,16 +27,16 @@
             android:textColorHint="#616161" />
 
         <EditText
-            android:id="@+id/ageEdit"
+            android:id="@+id/purchasedGoodsEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/nameEdit"
             android:layout_marginTop="15dp"
             android:background="@drawable/custom_et"
-            android:drawableStart="@drawable/ic_age"
+            android:drawableStart="@drawable/ic_money"
             android:drawablePadding="12dp"
-            android:hint="Age"
-            android:inputType="number"
+            android:hint="Purchased Goods"
+            android:inputType="text"
             android:padding="10dp"
             android:textColor="#FFF"
             android:textColorHint="#616161" />
@@ -45,7 +45,7 @@
             android:id="@+id/switchCustomer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ageEdit"
+            android:layout_below="@+id/purchasedGoodsEdit"
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:text="Active Customer"

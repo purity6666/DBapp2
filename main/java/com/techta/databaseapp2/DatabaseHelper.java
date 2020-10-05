@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CUSTOMER_TABLE = "CUSTOMER_TABLE";
     private static final String COLUMN_CUSTOMER_NAME = "CUSTOMER_NAME";
-    private static final String COLUMN_CUSTOMER_AGE = "CUSTOMER_AGE";
+    private static final String COLUMN_CUSTOMER_PG = "CUSTOMER_PURCHASED_GOODS";
     private static final String COLUMN_ACTIVE_CUSTOMER = "ACTIVE_CUSTOMER";
     private static final String COLUMN_ID = "ID";
 
@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableStatement = "CREATE TABLE " + CUSTOMER_TABLE + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CUSTOMER_NAME + " TEXT, " + COLUMN_CUSTOMER_AGE + " INT, " + COLUMN_ACTIVE_CUSTOMER + " BOOL)";
+        String createTableStatement = "CREATE TABLE " + CUSTOMER_TABLE + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CUSTOMER_NAME + " TEXT, " + COLUMN_CUSTOMER_PG + " TEXT, " + COLUMN_ACTIVE_CUSTOMER + " BOOL)";
 
         sqLiteDatabase.execSQL(createTableStatement);
     }
@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
 
         cv.put(COLUMN_CUSTOMER_NAME, customerModel.getName());
-        cv.put(COLUMN_CUSTOMER_AGE, customerModel.getAge());
+        cv.put(COLUMN_CUSTOMER_PG, customerModel.getPurchasedGoods());
         cv.put(COLUMN_ACTIVE_CUSTOMER, customerModel.isActive());
 
         long insert = db.insert(CUSTOMER_TABLE, null, cv);
@@ -54,11 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = database.rawQuery(queryString, null);
 
-        if (cursor.moveToFirst()) {
-            return true;
-        } else {
-            return false;
-        }
+        return cursor.moveToFirst();
     }
 
     public ArrayList<CustomerModel> getEveryone() {
@@ -76,10 +72,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int customerID = cursor.getInt(0);
                 String customerName = cursor.getString(1);
-                int customerAge = cursor.getInt(2);
+                String customerPurchasedGoods = cursor.getString(2);
                 boolean customerActive = cursor.getInt(3) == 1;
 
-                CustomerModel newCustomer = new CustomerModel(customerID, customerName, customerAge, customerActive);
+                CustomerModel newCustomer = new CustomerModel(customerID, customerName, customerPurchasedGoods, customerActive);
                 returnList.add(newCustomer);
 
             } while (cursor.moveToNext());

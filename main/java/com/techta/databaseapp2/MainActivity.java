@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<CustomerModel> customers;
     private RecyclerView recyclerView;
     private Button addBtn, getCustomerCountBtn;
-    private EditText customerNameET, customerAgeET;
+    private EditText customerNameET, customerPGET;
     private SwitchCompat isActiveSwitch;
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //EditTexts
         customerNameET = findViewById(R.id.nameEdit);
-        customerAgeET = findViewById(R.id.ageEdit);
+        customerPGET = findViewById(R.id.purchasedGoodsEdit);
 
         //Switch
         isActiveSwitch = findViewById(R.id.switchCustomer);
@@ -115,11 +115,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //check if input is empty
                 try {
-                    customerModel = new CustomerModel(-1, customerNameET.getText().toString(), Integer.parseInt(customerAgeET.getText().toString()), isActiveSwitch.isChecked());
+                    customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveSwitch.isChecked());
                     Toast.makeText(this, customerModel.getName() + " successfully added as customer", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(this, "Input invalid", Toast.LENGTH_SHORT).show();
-                    customerModel = new CustomerModel(-1, "error", 0, false);
+                    customerModel = new CustomerModel(-1, "error", "error", false);
                 }
 
                 //if it doesn't result in an error it gets added into the database
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     databaseHelper.addItem(customerModel);
                 }
 
-                customerAgeET.getText().clear();
+                customerPGET.getText().clear();
                 customerNameET.getText().clear();
 
                 customers = databaseHelper.getEveryone();

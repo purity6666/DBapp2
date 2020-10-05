@@ -37,16 +37,24 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.customerName.setText(customers.get(position).getName());
-        holder.customerAge.setText("Age: " + customers.get(position).getAge());
+        holder.customerPurchased.setText(customers.get(position).getPurchasedGoods());
         holder.customerID.setText("ID: " + customers.get(position).getId());
+
         if (customers.get(position).isActive()) {
             holder.isActive.setText("Active");
         } else {
             holder.isActive.setText("Not Active");
         }
+
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            }
+        });
+
+        holder.customerInfoCV.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
                 String customerIsActive;
 
                 if (customers.get(position).isActive()) {
@@ -57,13 +65,14 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 String text = customers.get(position).getName() +
-                        "\n" + "Age: " + customers.get(position).getAge() +
+                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
                         "\n" + "ID: " + customers.get(position).getId() +
                         "\n" + customerIsActive;
                 ClipData clip = ClipData.newPlainText("customerInfo", text);
                 clipboard.setPrimaryClip(clip);
 
                 Toast.makeText(context, "Customer Info copied to Clipboard", Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
     }
@@ -79,14 +88,14 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView customerName, customerAge, customerID, isActive;
+        private TextView customerName, customerPurchased, customerID, isActive;
         private CardView customerInfoCV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            customerPurchased = itemView.findViewById(R.id.purchasedGoodsText);
             customerInfoCV = itemView.findViewById(R.id.customerCV);
-            customerAge = itemView.findViewById(R.id.customerAge);
             customerID = itemView.findViewById(R.id.customerID);
             customerName = itemView.findViewById(R.id.customerName);
             isActive = itemView.findViewById(R.id.customerIsActive);
