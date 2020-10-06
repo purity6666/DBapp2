@@ -8,12 +8,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +26,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ArrayList<CustomerModel> customers;
     private RecyclerView recyclerView;
-    private Button addBtn, getCustomerCountBtn;
+    private Button addBtn, getCustomerCountBtn, deleteAllBtn;
     private EditText customerNameET, customerPGET;
     private SwitchCompat isActiveSwitch;
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
     private TextView customerCount;
+    private RelativeLayout mainLayout;
 
 
     @SuppressLint("SetTextI18n")
@@ -37,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Main layout
+        mainLayout = findViewById(R.id.parent);
 
         //RecyclerView
         recyclerView = findViewById(R.id.itemRV);
@@ -46,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addBtn.setOnClickListener(this);
         getCustomerCountBtn = findViewById(R.id.getCustomerCountButton);
         getCustomerCountBtn.setOnClickListener(this);
+        deleteAllBtn = findViewById(R.id.deleteAllBtn);
+        deleteAllBtn.setOnClickListener(this);
 
         //EditTexts
         customerNameET = findViewById(R.id.nameEdit);
@@ -64,12 +73,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         customers = databaseHelper.getEveryone();
 
-        adapter = new CustomerRecyclerViewAdapter(this);
-        adapter.setCustomers(customers);
+        showRecyclerView(this);
 
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
+        if (customers.size() == 0) {
+            deleteAllBtn.setVisibility(View.GONE);
+        } else {
+            deleteAllBtn.setVisibility(View.VISIBLE);
+        }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
@@ -86,11 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 customers.remove(viewHolder.getAdapterPosition());
                 databaseHelper.deleteItem(customerModel);
 
-                adapter = new CustomerRecyclerViewAdapter(getApplicationContext());
-                adapter.setCustomers(customers);
-
-                recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+                showRecyclerView(getApplicationContext());
 
                 customerCountTV();
 
@@ -110,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.addBtn:
                 addBtn.startAnimation(btnClick);
+
+                if (customers.size() == 0) {
+                    deleteAllBtn.setVisibility(View.VISIBLE);
+                }
 
                 CustomerModel customerModel;
 
@@ -133,11 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 customers = databaseHelper.getEveryone();
 
-                adapter = new CustomerRecyclerViewAdapter(this);
-                adapter.setCustomers(customers);
-
-                recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+                showRecyclerView(this);
 
                 customerCountTV();
 
@@ -151,7 +157,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     Toast.makeText(this, "There are no customers", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.deleteAllBtn:
+                deleteAllBtn.startAnimation(btnClick);
+
+                databaseHelper.deleteEverything();
+                customers = databaseHelper.getEveryone();
+
+                showRecyclerView(this);
+
+                customerCountTV();
+
+                Toast.makeText(this, "All customers deleted", Toast.LENGTH_SHORT).show();
+
+                deleteAllBtn.setVisibility(View.GONE);
+
+                break;
         }
+    }
+
+    private void showRecyclerView(Context context) {
+        adapter = new CustomerRecyclerViewAdapter(context);
+        adapter.setCustomers(customers);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
     }
 
     @SuppressLint("SetTextI18n")
@@ -161,6 +191,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             customerCount.setText("No customers...");
         }
+    }
+
+    private void showSnackbar() {
+
     }
 
 }

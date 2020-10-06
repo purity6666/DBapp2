@@ -88,4 +88,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return returnList;
     }
+
+    public void deleteEverything() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CUSTOMER_TABLE, null, null);
+        db.close();
+    }
 }

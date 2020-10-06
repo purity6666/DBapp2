@@ -18,11 +18,13 @@
             android:id="@+id/purchasedGoodsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18sp"
             android:layout_marginTop="5dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/customerIsActive"
             android:text="purchased goods"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            android:gravity="center_horizontal"/>
 
 
 

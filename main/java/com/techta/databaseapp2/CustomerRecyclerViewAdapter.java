@@ -37,7 +37,7 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.customerName.setText(customers.get(position).getName());
-        holder.customerPurchased.setText(customers.get(position).getPurchasedGoods());
+        holder.customerPurchased.setText("Purchased Goods: \n" + customers.get(position).getPurchasedGoods());
         holder.customerID.setText("ID: " + customers.get(position).getId());
 
         if (customers.get(position).isActive()) {
