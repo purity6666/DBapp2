@@ -1,6 +1,7 @@
 package com.techta.databaseapp2;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -9,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -161,16 +162,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.deleteAllBtn:
                 deleteAllBtn.startAnimation(btnClick);
 
-                databaseHelper.deleteEverything();
-                customers = databaseHelper.getEveryone();
+                //alert dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
 
-                showRecyclerView(this);
+                builder.setCancelable(true);
 
-                customerCountTV();
+                builder.setTitle("Delete all");
+                builder.setMessage("Are you sure you want to delete everything?");
+                builder.setIcon(R.drawable.ic_delete);
 
-                Toast.makeText(this, "All customers deleted", Toast.LENGTH_SHORT).show();
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                });
 
-                deleteAllBtn.setVisibility(View.GONE);
+                builder.setPositiveButton("Delete All", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //calling the function that deletes everything
+                        databaseHelper.deleteEverything();
+                        customers = databaseHelper.getEveryone();
+
+                        Toast.makeText(getApplicationContext(), "All customers deleted", Toast.LENGTH_SHORT).show();
+
+                        showRecyclerView(getApplicationContext());
+
+                        customerCountTV();
+
+                        deleteAllBtn.setVisibility(View.GONE);
+                    }
+                });
+
+                builder.show();
 
                 break;
         }
@@ -191,10 +214,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             customerCount.setText("No customers...");
         }
-    }
-
-    private void showSnackbar() {
-
     }
 
 }
