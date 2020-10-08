@@ -42,8 +42,9 @@
             android:textColor="#FFF"
             android:textColorHint="#616161" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchCustomer"
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:buttonTint="@color/white"
+            android:id="@+id/checkCustomer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/purchasedGoodsEdit"
@@ -56,7 +57,7 @@
             android:id="@+id/addBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/switchCustomer"
+            android:layout_below="@+id/checkCustomer"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
@@ -69,7 +70,7 @@
             android:id="@+id/getCustomerCountButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/switchCustomer"
+            android:layout_below="@+id/checkCustomer"
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/button_design"

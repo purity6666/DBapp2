@@ -3,7 +3,6 @@ package com.techta.databaseapp2;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private Button addBtn, getCustomerCountBtn, deleteAllBtn;
     private EditText customerNameET, customerPGET;
-    private SwitchCompat isActiveSwitch;
+    private CheckBox isActiveCheck;
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         customerPGET = findViewById(R.id.purchasedGoodsEdit);
 
         //Switch
-        isActiveSwitch = findViewById(R.id.switchCustomer);
+        isActiveCheck = findViewById(R.id.checkCustomer);
 
         //Animation
         btnClick = AnimationUtils.loadAnimation(this, R.anim.button_click);
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //check if input is empty
                 try {
-                    customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveSwitch.isChecked());
+                    customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveCheck.isChecked());
                     Toast.makeText(this, customerModel.getName() + " successfully added as customer", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(this, "Input invalid", Toast.LENGTH_SHORT).show();
@@ -163,37 +163,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 deleteAllBtn.startAnimation(btnClick);
 
                 //alert dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog)
+                        .setCancelable(true)
+                        .setTitle("Delete all")
+                        .setMessage("Are you sure you want to delete everything?")
+                        .setIcon(R.drawable.ic_delete)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {}
+                        })
+                        .setPositiveButton("Delete All", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //calling the function that deletes everything
+                                databaseHelper.deleteEverything();
+                                customers = databaseHelper.getEveryone();
 
-                builder.setCancelable(true);
+                                Toast.makeText(getApplicationContext(), "All customers deleted", Toast.LENGTH_SHORT).show();
 
-                builder.setTitle("Delete all");
-                builder.setMessage("Are you sure you want to delete everything?");
-                builder.setIcon(R.drawable.ic_delete);
+                                showRecyclerView(getApplicationContext());
 
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {}
-                });
+                                customerCountTV();
 
-                builder.setPositiveButton("Delete All", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //calling the function that deletes everything
-                        databaseHelper.deleteEverything();
-                        customers = databaseHelper.getEveryone();
-
-                        Toast.makeText(getApplicationContext(), "All customers deleted", Toast.LENGTH_SHORT).show();
-
-                        showRecyclerView(getApplicationContext());
-
-                        customerCountTV();
-
-                        deleteAllBtn.setVisibility(View.GONE);
-                    }
-                });
-
-                builder.show();
+                                deleteAllBtn.setVisibility(View.GONE);
+                            }
+                        });
+                        builder.show();
 
                 break;
         }
@@ -215,5 +210,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             customerCount.setText("No customers...");
         }
     }
-
 }

@@ -24,7 +24,8 @@
             android:layout_below="@id/customerIsActive"
             android:text="purchased goods"
             android:textColor="#FFF"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:visibility="gone"/>
 
 
 

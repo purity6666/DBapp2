@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,25 +51,36 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                String customerFormat =
+                        customers.get(position).getName() +
+                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                        "\n" + "ID: " + customers.get(position).getId() +
+                        "\n" + checkIfActive(position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialog)
+                        .setCancelable(true)
+                        .setTitle("Customer info")
+                        .setMessage(customerFormat)
+                        .setIcon(R.drawable.ic_person)
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {}
+                        });
+                builder.show();
             }
         });
 
         holder.customerInfoCV.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                String customerIsActive;
-
-                if (customers.get(position).isActive()) {
-                    customerIsActive = "Active";
-                } else {
-                    customerIsActive = "Not Active";
-                }
 
                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                String text = customers.get(position).getName() +
+                String text =
+                        customers.get(position).getName() +
                         "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
                         "\n" + "ID: " + customers.get(position).getId() +
-                        "\n" + customerIsActive;
+                        "\n" + checkIfActive(position);
                 ClipData clip = ClipData.newPlainText("customerInfo", text);
                 clipboard.setPrimaryClip(clip);
 
@@ -75,6 +88,19 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
                 return true;
             }
         });
+    }
+
+    private String checkIfActive(int position) {
+
+        String customerIsActive;
+
+        if (customers.get(position).isActive()) {
+            customerIsActive = "Active";
+        } else {
+            customerIsActive = "Not Active";
+        }
+
+        return customerIsActive;
     }
 
     public void setCustomers(ArrayList<CustomerModel> customers) {
