@@ -105,6 +105,7 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     public void setCustomers(ArrayList<CustomerModel> customers) {
         this.customers = customers;
+        notifyDataSetChanged();
     }
 
     @Override

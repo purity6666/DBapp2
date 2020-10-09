@@ -17,7 +17,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
-    private TextView customerCount;
-    private RelativeLayout mainLayout;
+    private TextView customerCount, customerActiveCount;
 
 
     @SuppressLint("SetTextI18n")
@@ -42,9 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Main layout
-        mainLayout = findViewById(R.id.parent);
 
         //RecyclerView
         recyclerView = findViewById(R.id.itemRV);
@@ -69,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //TextView
         customerCount = findViewById(R.id.customerCount);
+        customerActiveCount = findViewById(R.id.activeCustomerCount);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -92,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 CustomerModel customerModel = customers.get(viewHolder.getAdapterPosition());
 
-                Toast.makeText(MainActivity.this, customerModel.getName()+ " removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, customerModel.getName() + " removed", Toast.LENGTH_SHORT).show();
 
                 customers.remove(viewHolder.getAdapterPosition());
                 databaseHelper.deleteItem(customerModel);
@@ -100,13 +96,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showRecyclerView(getApplicationContext());
 
                 customerCountTV();
+                customerActiveCountTV();
 
                 adapter.notifyDataSetChanged();
+
+                if (customers.size() == 0) {
+                    deleteAllBtn.setVisibility(View.GONE);
+                }
             }
 
         }).attachToRecyclerView(recyclerView);
 
         customerCountTV();
+        customerActiveCountTV();
 
     }
 
@@ -147,13 +149,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showRecyclerView(this);
 
                 customerCountTV();
+                customerActiveCountTV();
 
                 break;
             case R.id.getCustomerCountButton:
                 getCustomerCountBtn.startAnimation(btnClick);
 
                 //check if the list is null and then returns a Toast
-                if (customers != null) {
+                if (customers.size() != 0) {
                     Toast.makeText(this, "Customer Count: " + customers.size(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "There are no customers", Toast.LENGTH_SHORT).show();
@@ -184,12 +187,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 showRecyclerView(getApplicationContext());
 
                                 customerCountTV();
+                                customerActiveCountTV();
 
                                 deleteAllBtn.setVisibility(View.GONE);
                             }
                         });
-                        builder.show();
 
+                builder.show();
                 break;
         }
     }
@@ -203,9 +207,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @SuppressLint("SetTextI18n")
+    private void customerActiveCountTV() {
+        int activeCustomers = 0;
+
+        if (customers.size() == 0) {
+            customerActiveCount.setVisibility(View.GONE);
+        } else {
+            customerActiveCount.setVisibility(View.VISIBLE);
+            for (CustomerModel customerModel : customers) {
+                if (customerModel.isActive()) {
+                    activeCustomers++;
+                }
+            }
+            if (activeCustomers == 0) {
+                customerActiveCount.setText("No active customers...");
+            } else if (activeCustomers == 1) {
+                customerActiveCount.setText("1 Active Customer");
+            } else {
+                customerActiveCount.setText(activeCustomers + "Active Customers");
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     private void customerCountTV() {
-        if (customers != null) {
+        if (customers.size() > 1) {
             customerCount.setText(customers.size() + " Customers");
+        } else if (customers.size() == 1) {
+            customerCount.setText("1 Customer");
         } else {
             customerCount.setText("No customers...");
         }
