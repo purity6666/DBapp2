@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
         holder.customerName.setText(customers.get(position).getName());
         holder.customerPurchased.setText("Purchased Goods: \n" + customers.get(position).getPurchasedGoods());
         holder.customerID.setText("ID: " + customers.get(position).getId());
@@ -50,13 +52,24 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
+                boolean isSelected = false;
+
+                //TODO needs to be finished
+
+            }
+        });
+
+
+        holder.customerInfoCV.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View view) {
 
                 String customerFormat =
                         customers.get(position).getName() +
-                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
-                        "\n" + "ID: " + customers.get(position).getId() +
-                        "\n" + checkIfActive(position);
+                                "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                                "\n" + "ID: " + customers.get(position).getId() +
+                                "\n" + checkIfActive(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialog)
                         .setCancelable(true)
@@ -66,25 +79,24 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
                         .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {}
+                        })
+                        .setPositiveButton("Copy", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                String text =
+                                        customers.get(position).getName() +
+                                                "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                                                "\n" + "ID: " + customers.get(position).getId() +
+                                                "\n" + checkIfActive(position);
+                                ClipData clip = ClipData.newPlainText("customerInfo", text);
+                                clipboard.setPrimaryClip(clip);
+
+                                Toast.makeText(context, "Customer Info copied to Clipboard", Toast.LENGTH_SHORT).show();
+                            }
                         });
                 builder.show();
-            }
-        });
 
-        holder.customerInfoCV.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
-                ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                String text =
-                        customers.get(position).getName() +
-                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
-                        "\n" + "ID: " + customers.get(position).getId() +
-                        "\n" + checkIfActive(position);
-                ClipData clip = ClipData.newPlainText("customerInfo", text);
-                clipboard.setPrimaryClip(clip);
-
-                Toast.makeText(context, "Customer Info copied to Clipboard", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

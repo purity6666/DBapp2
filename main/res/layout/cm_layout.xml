@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#373737"
+        android:background="@color/cardViewBackgroundColor"
         android:padding="5dp">
 
         <TextView
@@ -23,7 +23,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@id/customerIsActive"
             android:text="purchased goods"
-            android:textColor="#FFF"
+            android:textColor="@color/white"
             android:gravity="center_horizontal"
             android:visibility="gone"/>
 
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="Name"
             android:textSize="20sp"
-            android:textColor="#fff"/>
+            android:textColor="@color/white"/>
 
         <TextView
             android:layout_marginEnd="5dp"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="ID"
             android:textSize="20sp"
-            android:textColor="#fff"
+            android:textColor="@color/white"
             android:layout_alignParentEnd="true"/>
 
         <TextView
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:text="Is Active"
             android:textSize="20sp"
-            android:textColor="#fff"
+            android:textColor="@color/white"
             android:layout_below="@+id/customerID"
             android:layout_alignParentEnd="true"/>
 

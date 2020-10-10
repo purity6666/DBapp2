@@ -24,8 +24,8 @@
             android:drawablePadding="12dp"
             android:hint="Name"
             android:padding="10dp"
-            android:textColor="#FFF"
-            android:textColorHint="#616161" />
+            android:textColor="@color/white"
+            android:textColorHint="@color/lighterGray" />
 
         <EditText
             android:id="@+id/purchasedGoodsEdit"
@@ -39,8 +39,8 @@
             android:hint="Purchased Goods"
             android:inputType="text"
             android:padding="10dp"
-            android:textColor="#FFF"
-            android:textColorHint="#616161" />
+            android:textColor="@color/white"
+            android:textColorHint="@color/lighterGray" />
 
         <androidx.appcompat.widget.AppCompatCheckBox
             android:buttonTint="@color/white"

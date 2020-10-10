@@ -5,6 +5,9 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="white">#FFF</color>
     <color name="darkerGray">#292929</color>
-    <color name="lighterGray">#595959</color>
+    <color name="lighterGray">#616161</color>
     <color name="reallyLightGray">#9A9A9A</color>
+    <color name="cardViewBackgroundColor">#373737</color>
+    <color name="cardViewSelected">#707070</color>
+
 </resources>
