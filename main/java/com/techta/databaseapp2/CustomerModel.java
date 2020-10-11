@@ -6,6 +6,7 @@ public class CustomerModel {
     private String name;
     private String purchasedGoods;
     private boolean isActive;
+    private boolean isSelected = false;
 
     public CustomerModel(int id, String name, String purchasedGoods, boolean isActive) {
         this.id = id;
@@ -16,6 +17,14 @@ public class CustomerModel {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     public void setId(int id) {

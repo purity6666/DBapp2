@@ -6,12 +6,12 @@
     android:padding="10dp"
     app:cardCornerRadius="10dp"
     android:id="@+id/customerCV"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/cardViewBackgroundColor">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardViewBackgroundColor"
         android:padding="5dp">
 
         <TextView

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ArrayList<CustomerModel> customers;
     private RecyclerView recyclerView;
-    private Button addBtn, getCustomerCountBtn, deleteAllBtn;
+    private Button addBtn, getCustomerCountBtn, deleteAllBtn, deleteSelectedButton;
     private EditText customerNameET, customerPGET;
     private CheckBox isActiveCheck;
     private Animation btnClick;
@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getCustomerCountBtn.setOnClickListener(this);
         deleteAllBtn = findViewById(R.id.deleteAllBtn);
         deleteAllBtn.setOnClickListener(this);
+        deleteSelectedButton = findViewById(R.id.deleteSelected);
+        deleteSelectedButton.setOnClickListener(this);
+
 
         //EditTexts
         customerNameET = findViewById(R.id.nameEdit);
@@ -151,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 customerCountTV();
                 customerActiveCountTV();
 
+                deleteSelectedButton.setVisibility(View.GONE);
+
                 break;
             case R.id.getCustomerCountButton:
                 getCustomerCountBtn.startAnimation(btnClick);
@@ -195,11 +200,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 builder.show();
                 break;
+
+            case R.id.deleteSelected:
+                deleteSelectedButton.startAnimation(btnClick);
+
+                for (CustomerModel customerModel1 : customers) {
+                    if (customerModel1.isSelected()) {
+                        databaseHelper.deleteItem(customerModel1);
+                    }
+                }
+
+                customers = databaseHelper.getEveryone();
+
+                if (customers.size() == 0) {
+                    deleteAllBtn.setVisibility(View.GONE);
+                }
+
+                deleteSelectedButton.setVisibility(View.GONE);
+
+                showRecyclerView(this);
+
+                customerCountTV();
+                customerActiveCountTV();
+
+                Toast.makeText(this, "Deleted selected items", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showRecyclerView(Context context) {
-        adapter = new CustomerRecyclerViewAdapter(context);
+        adapter = new CustomerRecyclerViewAdapter(context, deleteSelectedButton);
         adapter.setCustomers(customers);
 
         recyclerView.setAdapter(adapter);
@@ -224,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else if (activeCustomers == 1) {
                 customerActiveCount.setText("1 Active Customer");
             } else {
-                customerActiveCount.setText(activeCustomers + "Active Customers");
+                customerActiveCount.setText(activeCustomers + " Active Customers");
             }
         }
     }

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,8 +24,10 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     private ArrayList<CustomerModel> customers;
     private Context context;
+    private Button button;
 
-    public CustomerRecyclerViewAdapter(Context context) {
+    public CustomerRecyclerViewAdapter(Context context, Button button) {
+        this.button = button;
         this.context = context;
     }
 
@@ -43,20 +46,31 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
         holder.customerName.setText(customers.get(position).getName());
         holder.customerPurchased.setText("Purchased Goods: \n" + customers.get(position).getPurchasedGoods());
         holder.customerID.setText("ID: " + customers.get(position).getId());
-
-        if (customers.get(position).isActive()) {
-            holder.isActive.setText("Active");
-        } else {
-            holder.isActive.setText("Not Active");
-        }
+        holder.isActive.setText(checkIfActive(position));
 
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                boolean isSelected = false;
+                int x = 0;
 
-                //TODO needs to be finished
+                CustomerModel customerModel = customers.get(holder.getAdapterPosition());
+                customerModel.setSelected(!customerModel.isSelected());
+                if (customerModel.isSelected()) {
+                    button.setVisibility(View.VISIBLE);
+                    holder.customerInfoCV.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardViewSelected));
+                }
 
+                for (CustomerModel customerModel1 : customers) {
+                    if (customerModel1.isSelected()) {
+                        x++;
+                    }
+                }
+
+                if (x == 0) {
+                    button.setVisibility(View.GONE);
+                } else {
+                    button.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -67,9 +81,9 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
                 String customerFormat =
                         customers.get(position).getName() +
-                                "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
-                                "\n" + "ID: " + customers.get(position).getId() +
-                                "\n" + checkIfActive(position);
+                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                        "\n" + "ID: " + customers.get(position).getId() +
+                        "\n" + checkIfActive(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialog)
                         .setCancelable(true)
@@ -86,9 +100,10 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
                                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                                 String text =
                                         customers.get(position).getName() +
-                                                "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
-                                                "\n" + "ID: " + customers.get(position).getId() +
-                                                "\n" + checkIfActive(position);
+                                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                                        "\n" + "ID: " + customers.get(position).getId() +
+                                        "\n" + checkIfActive(position);
+
                                 ClipData clip = ClipData.newPlainText("customerInfo", text);
                                 clipboard.setPrimaryClip(clip);
 
