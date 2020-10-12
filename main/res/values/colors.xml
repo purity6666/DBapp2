@@ -9,5 +9,6 @@
     <color name="reallyLightGray">#9A9A9A</color>
     <color name="cardViewBackgroundColor">#373737</color>
     <color name="cardViewSelected">#707070</color>
+    <color name="ic_launcher_background">#292929</color>
 
 </resources>

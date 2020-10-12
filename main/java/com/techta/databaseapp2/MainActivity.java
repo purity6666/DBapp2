@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Animation btnClick;
     private CustomerRecyclerViewAdapter adapter;
     private DatabaseHelper databaseHelper;
-    private TextView customerCount, customerActiveCount;
+    private TextView customerCount, customerActiveCount, selectedCount;
 
 
     @SuppressLint("SetTextI18n")
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //TextView
         customerCount = findViewById(R.id.customerCount);
         customerActiveCount = findViewById(R.id.activeCustomerCount);
+        selectedCount = findViewById(R.id.countSelected);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -123,38 +124,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.addBtn:
                 addBtn.startAnimation(btnClick);
 
-                if (customers.size() == 0) {
-                    deleteAllBtn.setVisibility(View.VISIBLE);
-                }
+                CustomerModel customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveCheck.isChecked());
 
-                CustomerModel customerModel;
+                if (customerModel.getName().matches("") || customerModel.getPurchasedGoods().matches("")) {
 
-                //check if input is empty
-                try {
-                    customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveCheck.isChecked());
-                    Toast.makeText(this, customerModel.getName() + " successfully added as customer", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
                     Toast.makeText(this, "Input invalid", Toast.LENGTH_SHORT).show();
-                    customerModel = new CustomerModel(-1, "error", "error", false);
-                }
 
-                //if it doesn't result in an error it gets added into the database
-                if (!customerModel.getName().equals("error")) {
+                } else {
                     DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
                     databaseHelper.addItem(customerModel);
+
+                    Toast.makeText(this, customerNameET.getText().toString() + " successfully added", Toast.LENGTH_SHORT).show();
+
+                    customerPGET.getText().clear();
+                    customerNameET.getText().clear();
+
+                    customers = databaseHelper.getEveryone();
+
+                    showRecyclerView(this);
+
+                    customerCountTV();
+                    customerActiveCountTV();
+
+                    deleteSelectedButton.setVisibility(View.GONE);
+
+                    if (deleteAllBtn.getVisibility() == View.GONE) {
+                        deleteAllBtn.setVisibility(View.VISIBLE);
+                    }
                 }
-
-                customerPGET.getText().clear();
-                customerNameET.getText().clear();
-
-                customers = databaseHelper.getEveryone();
-
-                showRecyclerView(this);
-
-                customerCountTV();
-                customerActiveCountTV();
-
-                deleteSelectedButton.setVisibility(View.GONE);
 
                 break;
             case R.id.getCustomerCountButton:
@@ -195,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 customerActiveCountTV();
 
                                 deleteAllBtn.setVisibility(View.GONE);
+                                selectedCount.setVisibility(View.GONE);
+                                deleteSelectedButton.setVisibility(View.GONE);
                             }
                         });
 
@@ -204,31 +203,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.deleteSelected:
                 deleteSelectedButton.startAnimation(btnClick);
 
-                for (CustomerModel customerModel1 : customers) {
-                    if (customerModel1.isSelected()) {
-                        databaseHelper.deleteItem(customerModel1);
-                    }
-                }
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog)
+                        .setCancelable(true)
+                        .setTitle("Delete Selected Items")
+                        .setMessage("Are you sure you want to delete selected items?")
+                        .setIcon(R.drawable.ic_delete)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {}
+                        })
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
-                customers = databaseHelper.getEveryone();
+                                for (CustomerModel customerModel1 : customers) {
+                                    if (customerModel1.isSelected()) {
+                                        databaseHelper.deleteItem(customerModel1);
+                                    }
+                                }
 
-                if (customers.size() == 0) {
-                    deleteAllBtn.setVisibility(View.GONE);
-                }
+                                customers = databaseHelper.getEveryone();
 
-                deleteSelectedButton.setVisibility(View.GONE);
+                                if (customers.size() == 0) {
+                                    deleteAllBtn.setVisibility(View.GONE);
+                                }
 
-                showRecyclerView(this);
+                                deleteSelectedButton.setVisibility(View.GONE);
 
-                customerCountTV();
-                customerActiveCountTV();
+                                showRecyclerView(getApplicationContext());
 
-                Toast.makeText(this, "Deleted selected items", Toast.LENGTH_SHORT).show();
+                                customerCountTV();
+                                customerActiveCountTV();
+
+                                Toast.makeText(getApplicationContext(), "Deleted selected items", Toast.LENGTH_SHORT).show();
+
+                                selectedCount.setVisibility(View.GONE);
+                            }
+                        });
+
+                builder1.show();
+
+
         }
     }
 
     private void showRecyclerView(Context context) {
-        adapter = new CustomerRecyclerViewAdapter(context, deleteSelectedButton);
+        adapter = new CustomerRecyclerViewAdapter(context, deleteSelectedButton, selectedCount);
         adapter.setCustomers(customers);
 
         recyclerView.setAdapter(adapter);

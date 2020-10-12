@@ -131,6 +131,14 @@
             android:textColor="@color/white"
             android:visibility="gone"/>
 
+        <TextView
+            android:id="@+id/countSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/deleteSelected"
+            android:textColor="@color/lighterGray"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp" />
     </RelativeLayout>
 
 

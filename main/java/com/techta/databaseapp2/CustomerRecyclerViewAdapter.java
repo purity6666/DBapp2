@@ -25,10 +25,12 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     private ArrayList<CustomerModel> customers;
     private Context context;
     private Button button;
+    private TextView textView;
 
-    public CustomerRecyclerViewAdapter(Context context, Button button) {
+    public CustomerRecyclerViewAdapter(Context context, Button button, TextView textView) {
         this.button = button;
         this.context = context;
+        this.textView = textView;
     }
 
     @NonNull
@@ -51,25 +53,31 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
         holder.customerInfoCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                int x = 0;
+                int selectedCount = 0;
 
                 CustomerModel customerModel = customers.get(holder.getAdapterPosition());
                 customerModel.setSelected(!customerModel.isSelected());
+
                 if (customerModel.isSelected()) {
                     button.setVisibility(View.VISIBLE);
                     holder.customerInfoCV.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardViewSelected));
+                } else if (!customerModel.isSelected()) {
+                    holder.customerInfoCV.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardViewBackgroundColor));
                 }
 
                 for (CustomerModel customerModel1 : customers) {
                     if (customerModel1.isSelected()) {
-                        x++;
+                        selectedCount++;
                     }
                 }
 
-                if (x == 0) {
+                if (selectedCount == 0) {
                     button.setVisibility(View.GONE);
+                    textView.setVisibility(View.GONE);
                 } else {
                     button.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText(selectedCount + " selected");
                 }
             }
         });
