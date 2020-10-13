@@ -44,9 +44,8 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-
+        holder.dateAdded.setText(customers.get(position).getDateAdded());
         holder.customerName.setText(customers.get(position).getName());
-        holder.customerPurchased.setText("Purchased Goods: \n" + customers.get(position).getPurchasedGoods());
         holder.customerID.setText("ID: " + customers.get(position).getId());
         holder.isActive.setText(checkIfActive(position));
 
@@ -88,9 +87,10 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
             public boolean onLongClick(final View view) {
 
                 String customerFormat =
-                        customers.get(position).getName() +
-                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
                         "\n" + "ID: " + customers.get(position).getId() +
+                        "\n" + "Name: " + customers.get(position).getName() +
+                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                        "\n" + "Date Added: " + customers.get(position).getDateAdded() +
                         "\n" + checkIfActive(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialog)
@@ -107,9 +107,10 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                                 String text =
-                                        customers.get(position).getName() +
-                                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
                                         "\n" + "ID: " + customers.get(position).getId() +
+                                        "\n" + "Name: " + customers.get(position).getName() +
+                                        "\n" + "Purchased Goods: " + customers.get(position).getPurchasedGoods() +
+                                        "\n" + "Date Added: " + customers.get(position).getDateAdded() +
                                         "\n" + checkIfActive(position);
 
                                 ClipData clip = ClipData.newPlainText("customerInfo", text);
@@ -118,8 +119,13 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
                                 Toast.makeText(context, "Customer Info copied to Clipboard", Toast.LENGTH_SHORT).show();
                             }
                         });
-                builder.show();
 
+                final AlertDialog dialog = builder.create();
+
+                if (dialog.getWindow() != null)
+                    dialog.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
+
+                dialog.show();
                 return true;
             }
         });
@@ -150,13 +156,13 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView customerName, customerPurchased, customerID, isActive;
+        private TextView customerName, customerID, isActive, dateAdded;
         private CardView customerInfoCV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            customerPurchased = itemView.findViewById(R.id.purchasedGoodsText);
+            dateAdded = itemView.findViewById(R.id.dateAdded);
             customerInfoCV = itemView.findViewById(R.id.customerCV);
             customerID = itemView.findViewById(R.id.customerID);
             customerName = itemView.findViewById(R.id.customerName);

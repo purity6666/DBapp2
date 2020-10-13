@@ -7,12 +7,16 @@ public class CustomerModel {
     private String purchasedGoods;
     private boolean isActive;
     private boolean isSelected = false;
+    private String dateAdded;
 
-    public CustomerModel(int id, String name, String purchasedGoods, boolean isActive) {
+
+
+    public CustomerModel(int id, String name, String purchasedGoods, boolean isActive, String dateAdded) {
         this.id = id;
         this.name = name;
         this.purchasedGoods = purchasedGoods;
         this.isActive = isActive;
+        this.dateAdded = dateAdded;
     }
 
     public int getId() {
@@ -25,6 +29,14 @@ public class CustomerModel {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public String getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(String dateAdded) {
+        this.dateAdded = dateAdded;
     }
 
     public void setId(int id) {

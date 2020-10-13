@@ -11,16 +11,22 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 CustomerModel customerModel = customers.get(viewHolder.getAdapterPosition());
 
-                Toast.makeText(MainActivity.this, customerModel.getName() + " removed", Toast.LENGTH_SHORT).show();
+                showToast(customerModel.getName() + " Removed", R.drawable.ic_person);
 
                 customers.remove(viewHolder.getAdapterPosition());
                 databaseHelper.deleteItem(customerModel);
@@ -117,24 +123,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.addBtn:
                 addBtn.startAnimation(btnClick);
 
-                CustomerModel customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveCheck.isChecked());
+                Calendar calendar = Calendar.getInstance();
+                String calendarFormat = DateFormat.getDateInstance().format(calendar.getTime());
+
+                CustomerModel customerModel = new CustomerModel(-1, customerNameET.getText().toString(), customerPGET.getText().toString(), isActiveCheck.isChecked(), calendarFormat);
 
                 if (customerModel.getName().matches("") || customerModel.getPurchasedGoods().matches("")) {
 
-                    Toast.makeText(this, "Input invalid", Toast.LENGTH_SHORT).show();
+                    showToast("Invalid Input", R.drawable.ic_close);
 
                 } else {
                     DatabaseHelper databaseHelper = new DatabaseHelper(getApplicationContext());
                     databaseHelper.addItem(customerModel);
 
-                    Toast.makeText(this, customerNameET.getText().toString() + " successfully added", Toast.LENGTH_SHORT).show();
+                    showToast(customerNameET.getText().toString() + " Successfully Added", R.drawable.ic_check);
 
                     customerPGET.getText().clear();
                     customerNameET.getText().clear();
@@ -159,9 +167,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //check if the list is null and then returns a Toast
                 if (customers.size() != 0) {
-                    Toast.makeText(this, "Customer Count: " + customers.size(), Toast.LENGTH_SHORT).show();
+                    showToast("Customer Count: " + customers.size(), R.drawable.ic_person);
                 } else {
-                    Toast.makeText(this, "There are no customers", Toast.LENGTH_SHORT).show();
+                    showToast("There are no Customers", R.drawable.ic_person);
                 }
                 break;
             case R.id.deleteAllBtn:
@@ -172,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setCancelable(true)
                         .setTitle("Delete all")
                         .setMessage("Are you sure you want to delete everything?")
-                        .setIcon(R.drawable.ic_delete)
+                        .setIcon(R.drawable.ic_invalid)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {}
@@ -184,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 databaseHelper.deleteEverything();
                                 customers = databaseHelper.getEveryone();
 
-                                Toast.makeText(getApplicationContext(), "All customers deleted", Toast.LENGTH_SHORT).show();
+                                showToast("All Customers Deleted", R.drawable.ic_delete);
 
                                 showRecyclerView(getApplicationContext());
 
@@ -197,7 +205,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
 
-                builder.show();
+                final AlertDialog dialog = builder.create();
+
+                if (dialog.getWindow() != null)
+                    dialog.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
+
+                dialog.show();
                 break;
 
             case R.id.deleteSelected:
@@ -207,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setCancelable(true)
                         .setTitle("Delete Selected Items")
                         .setMessage("Are you sure you want to delete selected items?")
-                        .setIcon(R.drawable.ic_delete)
+                        .setIcon(R.drawable.ic_invalid)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {}
@@ -235,14 +248,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 customerCountTV();
                                 customerActiveCountTV();
 
-                                Toast.makeText(getApplicationContext(), "Deleted selected items", Toast.LENGTH_SHORT).show();
+                                showToast("Deleted Selected Items", R.drawable.ic_delete);
 
                                 selectedCount.setVisibility(View.GONE);
                             }
                         });
 
-                builder1.show();
+                final AlertDialog dialog1 = builder1.create();
 
+                if (dialog1.getWindow() != null)
+                    dialog1.getWindow().getAttributes().windowAnimations = R.style.SlidingDialogAnimation;
+
+                dialog1.show();
 
         }
     }
@@ -287,5 +304,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             customerCount.setText("No customers...");
         }
+    }
+
+    private void showToast(String toastString, int resId) {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.toast_layout, (ViewGroup) findViewById(R.id.toastRoot));
+
+        TextView toastText = layout.findViewById(R.id.toastText);
+        ImageView toastImage =  layout.findViewById(R.id.toastImage);
+
+        toastText.setText(toastString);
+        toastImage.setImageResource(resId);
+
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.setView(layout);
+
+        toast.show();
     }
 }
