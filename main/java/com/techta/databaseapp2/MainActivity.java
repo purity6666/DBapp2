@@ -10,9 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -27,6 +32,8 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -46,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
 
         //RecyclerView
         recyclerView = findViewById(R.id.itemRV);
@@ -190,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //calling the function that deletes everything
                                 databaseHelper.deleteEverything();
-                                customers = databaseHelper.getEveryone();
+                                customers.clear();
 
                                 showToast("All Customers Deleted", R.drawable.ic_delete);
 
@@ -262,6 +273,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialog1.show();
 
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.sort_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sortAlphabet:
+                Collections.sort(customers, new Comparator<CustomerModel>() {
+                    @Override
+                    public int compare(CustomerModel customerModel, CustomerModel t1) {
+                        return customerModel.getName().compareTo(t1.getName());
+                    }
+                });
+
+                //sorted list not passed to the adapter for some reason
+                showRecyclerView(getApplicationContext());
+                break;
+            case R.id.sortID:
+                Collections.sort(customers, new Comparator<CustomerModel>() {
+                    @Override
+                    public int compare(CustomerModel customerModel, CustomerModel t1) {
+                        return Integer.valueOf(customerModel.getId()).compareTo(Integer.valueOf(t1.getId()));
+                    }
+                });
+
+                showRecyclerView(getApplicationContext());
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void showRecyclerView(Context context) {

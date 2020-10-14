@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableStatement = "CREATE TABLE " + CUSTOMER_TABLE + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CUSTOMER_NAME + " TEXT, " + COLUMN_DATE_ADDED + " TEXT," + COLUMN_CUSTOMER_PG + " TEXT, " + COLUMN_ACTIVE_CUSTOMER + " BOOL)";
+        String createTableStatement = "CREATE TABLE IF NOT EXISTS " + CUSTOMER_TABLE + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CUSTOMER_NAME + " TEXT, " + COLUMN_DATE_ADDED + " TEXT," + COLUMN_CUSTOMER_PG + " TEXT, " + COLUMN_ACTIVE_CUSTOMER + " BOOL)";
 
         sqLiteDatabase.execSQL(createTableStatement);
     }
