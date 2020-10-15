@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import java.util.Comparator;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ArrayList<CustomerModel> customers;
+    private ArrayList<CustomerModel> customers2;
     private RecyclerView recyclerView;
     private Button addBtn, getCustomerCountBtn, deleteAllBtn, deleteSelectedButton;
     private EditText customerNameET, customerPGET;
@@ -223,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 dialog.show();
                 break;
-
             case R.id.deleteSelected:
                 deleteSelectedButton.startAnimation(btnClick);
 
@@ -278,7 +279,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.sort_menu, menu);
+        inflater.inflate(R.menu.main_activity_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.getFilter().filter(s);
+                return false;
+            }
+        });
         return true;
     }
 
@@ -293,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
 
-                //sorted list not passed to the adapter for some reason
                 showRecyclerView(getApplicationContext());
                 break;
             case R.id.sortID:
@@ -305,6 +321,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
                 showRecyclerView(getApplicationContext());
+                break;
+            case R.id.sortActive:
+                customers2 = new ArrayList<>();
+
+                for (CustomerModel customerModel : customers) {
+                    if (customerModel.isActive()) {
+                        customers2.add(customerModel);
+                    }
+                }
+
+                adapter.setCustomers(customers2);
+                showToast(customers2.size() + " Active Customers", R.drawable.ic_person);
+
+                break;
+            case R.id.sortNonActive:
+                customers2 = new ArrayList<>();
+
+                for (CustomerModel customerModel : customers) {
+                    if (!customerModel.isActive()) {
+                        customers2.add(customerModel);
+                    }
+                }
+
+                adapter.setCustomers(customers2);
+                showToast(customers2.size() + " Non-Active Customers", R.drawable.ic_person);
+
                 break;
         }
 

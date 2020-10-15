@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:iconTint="@color/white">
+
+    <item
+        android:id="@+id/sortAlphabet"
+        android:title="Sort Alphabetically"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/sortID"
+        android:title="Sort by ID"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/search"
+        android:title="search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.widget.SearchView"/>
+
+    <item
+        android:id="@+id/sortActive"
+        android:title="Sort Active Customers"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/sortNonActive"
+        android:title="Sort Non-Active Customers"
+        app:showAsAction="never" />
+</menu>

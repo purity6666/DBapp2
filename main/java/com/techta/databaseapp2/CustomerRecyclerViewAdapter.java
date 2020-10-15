@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRecyclerViewAdapter.ViewHolder>{
+public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRecyclerViewAdapter.ViewHolder> implements Filterable {
 
     private ArrayList<CustomerModel> customers;
+    private ArrayList<CustomerModel> customersExtra;
     private Context context;
     private Button button;
     private TextView textView;
@@ -146,6 +149,7 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
 
     public void setCustomers(ArrayList<CustomerModel> customers) {
         this.customers = customers;
+        customersExtra = new ArrayList<>(customers);
         notifyDataSetChanged();
     }
 
@@ -153,6 +157,42 @@ public class CustomerRecyclerViewAdapter extends RecyclerView.Adapter<CustomerRe
     public int getItemCount() {
         return customers.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    private Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            ArrayList<CustomerModel> filteredList = new ArrayList<>();
+
+            if (charSequence == null || charSequence.length() == 0) {
+                filteredList.addAll(customersExtra);
+            } else {
+                String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                for (CustomerModel customerModel : customersExtra) {
+                    if (customerModel.getName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(customerModel);
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = filteredList;
+
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            customers.clear();
+            customers.addAll((ArrayList) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
